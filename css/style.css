@@ -1,0 +1,56 @@
+.navbar-brand span {
+  font-family: 'Dancing Script', cursive !important;
+  font-size: 1.8rem !important;
+  color: #196619 !important;
+ 
+}
+
+body {
+  background-color: #d6cec2 !important; /* Beige suave */
+}
+
+.cesta-card img {
+  height: 250px;
+  object-fit: cover;
+  border-bottom: 2px solid #ccc;
+  transition: transform 0.3s ease;
+}
+
+.cesta-card:hover img {
+  transform: scale(1.02);
+}
+
+.cesta-card {
+  transition: box-shadow 0.3s ease;
+}
+
+.cesta-card:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.iconos-beneficios {
+  background-color: #f5f1e9; /* Fondo beige suave */
+}
+
+.icono-beneficio {
+  font-size: 2.5rem;
+  color: #0b3d0b; /* Verde oscuro */
+  -webkit-text-stroke: 2px #0b3d0b;
+}
+
+.iconos-beneficios p {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.icono-grueso {
+  font-size: 2.5rem;
+  color: #0b3d0b;
+  -webkit-text-stroke: 3px #0b3d0b;
+}
+
+.icono-estrella{
+  font-size: 2.5rem;
+  color: #0b3d0b;
+  -webkit-text-stroke: 2px #0b3d0b;
+}
