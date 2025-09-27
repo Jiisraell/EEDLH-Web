@@ -1,56 +1,102 @@
-.navbar-brand span {
-  font-family: 'Dancing Script', cursive !important;
-  font-size: 1.8rem !important;
-  color: #196619 !important;
- 
-}
-
+/* Colores y tipografía generales */
 body {
-  background-color: #d6cec2 !important; /* Beige suave */
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
 }
 
-.cesta-card img {
-  height: 250px;
-  object-fit: cover;
-  border-bottom: 2px solid #ccc;
-  transition: transform 0.3s ease;
+h1, h2, h3, h4, h5, h6 {
+  color: #0b3d0b;
 }
 
-.cesta-card:hover img {
-  transform: scale(1.02);
+a {
+  color: #0b3d0b;
+  text-decoration: none;
 }
 
-.cesta-card {
-  transition: box-shadow 0.3s ease;
+a:hover {
+  color: #2a6d2a;
 }
 
-.cesta-card:hover {
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-.iconos-beneficios {
-  background-color: #f5f1e9; /* Fondo beige suave */
+/* Botón tienda */
+.btn-success {
+  background-color: #0b3d0b;
+  border: none;
 }
 
+.btn-success:hover {
+  background-color: #2a6d2a;
+}
+
+/* Sección info (texto largo centrado) */
+.info-seccion {
+  background-color: #e6f1e6;
+  color: #333;
+  font-size: 1.1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem 1rem;
+  border-radius: 8px;
+}
+
+/* Iconos beneficios */
 .icono-beneficio {
-  font-size: 2.5rem;
-  color: #0b3d0b; /* Verde oscuro */
-  -webkit-text-stroke: 2px #0b3d0b;
+  color: #0b3d0b;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.iconos-beneficios h5 {
+  font-weight: 700;
 }
 
 .iconos-beneficios p {
-  font-size: 1rem;
-  color: #333;
-  font-weight: 500;
+  color: #555;
+  max-width: 280px;
+  margin: 0 auto;
 }
 
-.icono-grueso {
-  font-size: 2.5rem;
+/* Navbar */
+.navbar-brand span {
+  font-weight: 700;
   color: #0b3d0b;
-  -webkit-text-stroke: 3px #0b3d0b;
 }
 
-.icono-estrella{
-  font-size: 2.5rem;
+/* Título de sección de cestas */
+.section-title {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
   color: #0b3d0b;
-  -webkit-text-stroke: 2px #0b3d0b;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Tarjetas de cestas */
+.cesta-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cesta-card img {
+  height: 260px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.cesta-card .card-body {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cesta-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(11, 61, 11, 0.2);
 }
