@@ -100,3 +100,78 @@ a:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(11, 61, 11, 0.2);
 }
+/* Testimonios */
+#testimonios .card {
+  background-color: #fefefe;
+  border-radius: 12px;
+}
+
+#testimonios p {
+  font-style: italic;
+  color: #2a6d2a;
+}
+
+#testimonios .card img {
+  object-fit: cover;
+  border: 2px solid #0b3d0b;
+}
+
+/* FAQ */
+.accordion-button {
+  font-weight: 600;
+  color: #0b3d0b;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #e6f1e6;
+  color: #0b3d0b;
+}
+
+/* Footer */
+footer {
+  font-size: 0.9rem;
+}
+
+footer a:hover {
+  text-decoration: underline;
+  color: #a5d6a7; /* Verde claro para que combine */
+}
+footer {
+  margin-top: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+#testimonios .card {
+  background-color: #fefefe; /* color por defecto */
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+/* Fondo distinto para valoraciones femeninas */
+/* Testimonios */
+#testimonios .card {
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  font-style: italic;
+  color: #2a6d2a;
+}
+
+#testimonios .card img {
+  object-fit: cover;
+  border: 2px solid #0b3d0b;
+}
+
+/* Testimonios */
+#testimonios .card {
+  background-color: #ffffff; /* fondo blanco */
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+  font-style: italic;
+  color: #2a6d2a;
+}
+
+#testimonios .card img {
+  object-fit: cover;
+  border: 2px solid #0b3d0b;
+}
+
