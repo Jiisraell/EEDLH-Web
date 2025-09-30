@@ -1,0 +1,45 @@
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+    .page-header {
+      background-color: #0b3d0b;
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+    }
+    .contact-info i {
+      font-size: 1.5rem;
+      color: #0b3d0b;
+      margin-right: 0.5rem;
+    }
+    .form-control:focus {
+      border-color: #0b3d0b;
+      box-shadow: 0 0 5px #0b3d0b;
+    }
+    .btn-primary {
+      background-color: #0b3d0b;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #084a08;
+    }
+    .map-responsive {
+      overflow: hidden;
+      padding-bottom: 56.25%;
+      position: relative;
+      height: 0;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .map-responsive iframe {
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      border: 0;
+      border-radius: 8px;
+    }
