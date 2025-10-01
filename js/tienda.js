@@ -1,6 +1,6 @@
 // js/tienda.js
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://eedlh-web-back.onrender.com';
 let todosLosProductos = [];
 let carrito = [];
 
