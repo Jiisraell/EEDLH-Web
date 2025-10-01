@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tienda - El Encanto De La Huerta</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <!-- AOS CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <!-- CSS común -->
+  <link rel="stylesheet" href="css/style.css" />
+  
+  <!-- CSS específico de tienda -->
+  <link rel="stylesheet" href="css/tienda.css" />
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="img/logo.png" alt="Logo Frutería" width="50" height="50" class="me-2" />
+        <span class="fw-bold text-success">El Encanto De La Huerta</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-center">
+          <li class="nav-item mx-2"><a class="nav-link text-dark fw-medium" href="index.html#inicio">Inicio</a></li>
+          <li class="nav-item mx-2"><a class="nav-link text-dark fw-medium" href="index.html#sobre-nosotros">Sobre nosotros</a></li>
+          <li class="nav-item mx-2"><a class="nav-link text-dark fw-medium active" href="tienda.html">Tienda</a></li>
+          <li class="nav-item mx-2"><a class="nav-link text-dark fw-medium" href="contacto.html">Contacto</a></li>
+          <li class="nav-item mx-2">
+            <!-- Carrito -->
+            <button class="btn btn-outline-success position-relative" id="btn-carrito">
+              <i class="bi bi-cart3"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="carrito-count">
+                0
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-tienda">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1 class="display-3 fw-bold mb-3 " data-aos="fade-down">Nuestra Tienda Online</h1>
+      <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+        Productos frescos de la huerta, directamente a tu hogar 🍎🥕
+      </p>
+      <div class="hero-stats" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-item">
+          <i class="bi bi-box-seam"></i>
+          <span id="total-productos">0</span>
+          <small>Productos</small>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-truck"></i>
+          <span>24h</span>
+          <small>Entrega</small>
+        </div>
+        <div class="stat-item">
+          <i class="bi bi-star-fill"></i>
+          <span>100%</span>
+          <small>Frescura</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenedor Principal -->
+  <main class="container my-5">
+    
+    <!-- Mensaje de carga -->
+    <div id="loading" class="loading">
+      <div class="spinner-grow text-success" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <div class="spinner-grow text-success" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <div class="spinner-grow text-success" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 fw-semibold">Cargando productos frescos...</p>
+    </div>
+
+    <!-- Filtros y búsqueda -->
+    <div class="filtros-section" id="filtros" style="display: none;">
+      <div class="row g-3 align-items-end">
+        
+        <!-- Búsqueda -->
+        <div class="col-lg-5">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="busqueda" 
+              placeholder="Buscar productos..." 
+            />
+          </div>
+        </div>
+
+        <!-- Filtro de categoría -->
+        <div class="col-lg-3 col-md-6">
+          <select class="form-select custom-select" id="filtroCategoria">
+            <option value="todos">📦 Todas las categorías</option>
+            <option value="frutas">🍎 Frutas</option>
+            <option value="verduras">🥕 Verduras</option>
+          </select>
+        </div>
+
+        <!-- Ordenar por -->
+        <div class="col-lg-3 col-md-6">
+          <select class="form-select custom-select" id="ordenar">
+            <option value="default">Ordenar por...</option>
+            <option value="precio-asc">💰 Precio: Menor a Mayor</option>
+            <option value="precio-desc">💰 Precio: Mayor a Menor</option>
+            <option value="nombre">🔤 Nombre: A-Z</option>
+            <option value="stock">📦 Mayor stock</option>
+          </select>
+        </div>
+
+        <!-- Botón limpiar filtros -->
+        <div class="col-lg-1">
+          <button class="btn btn-outline-secondary w-100" id="limpiar-filtros" title="Limpiar filtros">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Contador de resultados -->
+      <div class="resultados-info mt-3">
+        <span id="resultados-count">0 productos encontrados</span>
+      </div>
+    </div>
+
+    <!-- Grid de productos -->
+    <div class="productos-grid" id="productos-container">
+      <!-- Los productos se cargarán aquí dinámicamente -->
+    </div>
+
+    <!-- Mensaje de error -->
+    <div id="error" class="error-container" style="display: none;">
+      <div class="error-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <h3>¡Ups! No pudimos cargar los productos</h3>
+      <p>Parece que hay un problema de conexión con nuestra tienda.</p>
+      <div class="error-details">
+        <p><strong>Posibles soluciones:</strong></p>
+        <ul>
+          <li>Verifica que la API esté corriendo en <code>http://localhost:8000</code></li>
+          <li>Comprueba tu conexión a internet</li>
+          <li>Recarga la página</li>
+        </ul>
+      </div>
+      <button class="btn btn-success btn-lg mt-3" onclick="location.reload()">
+        <i class="bi bi-arrow-clockwise me-2"></i>Reintentar
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Mini Carrito (Modal simplificado) -->
+  <div class="mini-carrito" id="mini-carrito">
+    <div class="mini-carrito-header">
+      <h5><i class="bi bi-cart3 me-2"></i>Mi Carrito</h5>
+      <button class="btn-close-carrito" id="cerrar-carrito">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="mini-carrito-body" id="carrito-items">
+      <div class="carrito-vacio">
+        <i class="bi bi-cart-x"></i>
+        <p>Tu carrito está vacío</p>
+      </div>
+    </div>
+    <div class="mini-carrito-footer">
+      <div class="carrito-total">
+        <span>Total:</span>
+        <span class="total-precio" id="carrito-total">0.00€</span>
+      </div>
+      <button class="btn btn-success w-100 btn-finalizar" onclick="finalizarCompra()">
+        <i class="bi bi-check-circle me-2"></i>Finalizar compra
+    </button>
+    </div>
+  </div>
+
+  <!-- Overlay del carrito -->
+  <div class="carrito-overlay" id="carrito-overlay"></div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 text-center mt-5">
+    <div class="container">
+      <p class="mb-2">© 2025 El encanto de la huerta. Todos los derechos reservados.</p>
+      <div class="social-links mt-3">
+        <a href="#" class="text-white mx-2"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-white mx-2"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="text-white mx-2"><i class="bi bi-whatsapp"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de Checkout -->
+  <div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-bag-check me-2"></i>Finalizar Compra
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="checkout-form">
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo *</label>
+              <input type="text" class="form-control" id="nombre" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email *</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono *</label>
+              <input type="tel" class="form-control" id="telefono" required>
+            </div>
+            <div class="mb-3">
+              <label for="direccion" class="form-label">Dirección de entrega *</label>
+              <textarea class="form-control" id="direccion" rows="3" required></textarea>
+            </div>
+            
+            <!-- Resumen del pedido -->
+            <div class="checkout-resumen">
+              <h6 class="mb-3">Resumen del pedido</h6>
+              <div id="checkout-items" class="mb-3"></div>
+              <div class="checkout-total">
+                <strong>Total:</strong>
+                <strong id="checkout-total">0.00€</strong>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success" id="confirmar-pedido">
+            <i class="bi bi-check-circle me-2"></i>Confirmar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación -->
+  <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-body py-5">
+          <div class="success-icon mb-4">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <h3 class="mb-3">¡Pedido realizado con éxito!</h3>
+          <p class="text-muted mb-4">
+            Tu pedido #<span id="pedido-numero"></span> ha sido registrado correctamente.
+            <br>
+            Recibirás un email de confirmación en breve.
+          </p>
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ 
+      once: true, 
+      duration: 800,
+      offset: 100
+    });
+  </script>
+
+  <!-- JavaScript para cargar productos -->
+  <script src="js/tienda.js"></script>
+
+</body>
+</html>
