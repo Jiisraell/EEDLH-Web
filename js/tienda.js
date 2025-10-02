@@ -2,12 +2,11 @@
 
 const API_URL = 'https://eedlh-web-back.onrender.com';
 let todosLosProductos = [];
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 async function cargarProductos() {
   const loading = document.getElementById('loading');
   const error = document.getElementById('error');
-  const container = document.getElementById('productos-container');
   const filtros = document.getElementById('filtros');
 
   try {
@@ -26,6 +25,7 @@ async function cargarProductos() {
     document.getElementById('total-productos').textContent = productos.length;
 
     mostrarProductos(productos);
+    actualizarCarrito();
 
   } catch (err) {
     console.error('Error:', err);
@@ -56,16 +56,15 @@ function mostrarProductos(productos) {
     const div = document.createElement('div');
     div.setAttribute('data-aos', 'fade-up');
 
-    const descripcion = producto.categoria === 'frutas' 
-      ? 'Fruta fresca de temporada' 
-      : 'Verdura fresca de la huerta';
+    const imagenUrl = producto.imagen || 'https://via.placeholder.com/300x220/0b3d0b/ffffff?text=Producto';
 
     div.innerHTML = `
       <div class="product-card">
         <div class="product-image-container">
-          <img src="https://via.placeholder.com/300x220/0b3d0b/ffffff?text=${encodeURIComponent(producto.nombre)}" 
+          <img src="${imagenUrl}" 
                class="product-img" 
-               alt="${producto.nombre}">
+               alt="${producto.nombre}"
+               onerror="this.onerror=null; this.src='https://via.placeholder.com/300x220/0b3d0b/ffffff?text=Sin+Imagen';">
           <span class="badge-stock">
             <i class="bi bi-box-seam"></i> ${producto.stock}
           </span>
@@ -73,7 +72,7 @@ function mostrarProductos(productos) {
         </div>
         <div class="product-info">
           <h5 class="product-name">${producto.nombre}</h5>
-          <p class="product-description">${descripcion}</p>
+          <p class="product-description">${producto.descripcion || 'Producto fresco de temporada'}</p>
           <div class="product-footer">
             <div class="precio">
               ${producto.precio.toFixed(2)}€
@@ -175,8 +174,10 @@ function agregarAlCarrito(productoId) {
     });
   }
 
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+  
   actualizarCarrito();
-  mostrarNotificacion(`${producto.nombre} añadido al carrito ✓`);
+  mostrarNotificacion(`${producto.nombre} añadido al carrito`);
 }
 
 function actualizarCarrito() {
@@ -235,11 +236,13 @@ function cambiarCantidad(productoId, cambio) {
     return;
   }
 
+  localStorage.setItem('carrito', JSON.stringify(carrito));
   actualizarCarrito();
 }
 
 function eliminarDelCarrito(productoId) {
   carrito = carrito.filter(item => item.id !== productoId);
+  localStorage.setItem('carrito', JSON.stringify(carrito));
   actualizarCarrito();
 }
 
@@ -340,6 +343,7 @@ async function confirmarPedido() {
     confirmacionModal.show();
 
     carrito = [];
+    localStorage.removeItem('carrito');
     actualizarCarrito();
 
     document.getElementById('checkout-form').reset();
