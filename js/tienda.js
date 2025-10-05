@@ -4,19 +4,48 @@ const API_URL = 'https://eedlh-web-back.onrender.com';
 let todosLosProductos = [];
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
+// Configuración de reintentos para la API
+const API_CONFIG = {
+  maxRetries: 3,
+  retryDelay: 1000,
+  timeout: 10000
+};
+
+// Función auxiliar para hacer peticiones con reintentos
+async function fetchWithRetry(url, options = {}, retries = API_CONFIG.maxRetries) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+    
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeout);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    if (retries > 0 && error.name !== 'AbortError') {
+      console.log(`Reintentando... quedan ${retries} intentos`);
+      await new Promise(resolve => setTimeout(resolve, API_CONFIG.retryDelay));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
 async function cargarProductos() {
   const loading = document.getElementById('loading');
   const error = document.getElementById('error');
   const filtros = document.getElementById('filtros');
 
   try {
-    const response = await fetch(`${API_URL}/productos`);
-    
-    if (!response.ok) {
-      throw new Error('Error al obtener productos');
-    }
-
-    const productos = await response.json();
+    const productos = await fetchWithRetry(`${API_URL}/productos`);
     todosLosProductos = productos;
 
     loading.style.display = 'none';
@@ -30,6 +59,15 @@ async function cargarProductos() {
   } catch (err) {
     console.error('Error:', err);
     loading.style.display = 'none';
+    
+    // Mostrar mensaje de error más específico
+    const errorMessage = document.querySelector('#error p');
+    if (err.name === 'AbortError') {
+      errorMessage.textContent = 'La conexión tardó demasiado. Por favor, verifica tu conexión a internet.';
+    } else if (err.message.includes('Failed to fetch')) {
+      errorMessage.textContent = 'No se pudo conectar con el servidor. Verifica que la API esté funcionando.';
+    }
+    
     error.style.display = 'block';
   }
 }
@@ -160,6 +198,7 @@ function agregarAlCarrito(productoId) {
   
   if (!producto) {
     console.error('Producto no encontrado');
+    mostrarNotificacion('Error: Producto no encontrado', 'error');
     return;
   }
 
@@ -254,10 +293,12 @@ function toggleCarrito() {
   overlay.classList.toggle('active');
 }
 
-function mostrarNotificacion(mensaje) {
+function mostrarNotificacion(mensaje, tipo = 'success') {
   const notif = document.createElement('div');
-  notif.className = 'notificacion';
-  notif.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${mensaje}`;
+  notif.className = `notificacion ${tipo}`;
+  
+  const icono = tipo === 'error' ? 'x-circle-fill' : 'check-circle-fill';
+  notif.innerHTML = `<i class="bi bi-${icono} me-2"></i>${mensaje}`;
   document.body.appendChild(notif);
 
   setTimeout(() => notif.classList.add('show'), 10);
@@ -265,12 +306,12 @@ function mostrarNotificacion(mensaje) {
   setTimeout(() => {
     notif.classList.remove('show');
     setTimeout(() => notif.remove(), 300);
-  }, 2000);
+  }, 3000);
 }
 
 function finalizarCompra() {
   if (carrito.length === 0) {
-    alert('El carrito está vacío');
+    mostrarNotificacion('El carrito está vacío', 'error');
     return;
   }
 
@@ -292,16 +333,102 @@ function finalizarCompra() {
   checkoutModal.show();
 }
 
-async function confirmarPedido() {
+// ===== VALIDACIONES DEL FORMULARIO =====
+
+function validarEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+
+function validarTelefono(telefono) {
+  // Eliminar espacios y caracteres especiales
+  const telefonoLimpio = telefono.replace(/[\s\-\+]/g, '');
+  // Debe tener entre 9 y 15 dígitos
+  return /^\d{9,15}$/.test(telefonoLimpio);
+}
+
+function validarNombre(nombre) {
+  const nombreTrim = nombre.trim();
+  return nombreTrim.length >= 3 && nombreTrim.length <= 100;
+}
+
+function validarDireccion(direccion) {
+  const direccionTrim = direccion.trim();
+  return direccionTrim.length >= 10 && direccionTrim.length <= 500;
+}
+
+function mostrarErrorCampo(campo, mensaje) {
+  const input = document.getElementById(campo);
+  input.classList.add('is-invalid');
+  
+  let errorDiv = input.nextElementSibling;
+  if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
+    errorDiv = document.createElement('div');
+    errorDiv.className = 'invalid-feedback';
+    input.parentNode.insertBefore(errorDiv, input.nextSibling);
+  }
+  errorDiv.textContent = mensaje;
+}
+
+function limpiarErrorCampo(campo) {
+  const input = document.getElementById(campo);
+  input.classList.remove('is-invalid');
+  
+  const errorDiv = input.nextElementSibling;
+  if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+    errorDiv.remove();
+  }
+}
+
+function validarFormularioCheckout() {
   const nombre = document.getElementById('nombre').value;
   const email = document.getElementById('email').value;
   const telefono = document.getElementById('telefono').value;
   const direccion = document.getElementById('direccion').value;
+  
+  let valido = true;
+  
+  // Limpiar errores previos
+  ['nombre', 'email', 'telefono', 'direccion'].forEach(limpiarErrorCampo);
+  
+  // Validar nombre
+  if (!validarNombre(nombre)) {
+    mostrarErrorCampo('nombre', 'El nombre debe tener entre 3 y 100 caracteres');
+    valido = false;
+  }
+  
+  // Validar email
+  if (!validarEmail(email)) {
+    mostrarErrorCampo('email', 'Por favor, introduce un email válido');
+    valido = false;
+  }
+  
+  // Validar teléfono
+  if (!validarTelefono(telefono)) {
+    mostrarErrorCampo('telefono', 'El teléfono debe tener entre 9 y 15 dígitos');
+    valido = false;
+  }
+  
+  // Validar dirección
+  if (!validarDireccion(direccion)) {
+    mostrarErrorCampo('direccion', 'La dirección debe tener al menos 10 caracteres');
+    valido = false;
+  }
+  
+  return valido;
+}
 
-  if (!nombre || !email || !telefono || !direccion) {
-    alert('Por favor, completa todos los campos');
+async function confirmarPedido() {
+  // Validar formulario
+  if (!validarFormularioCheckout()) {
+    mostrarNotificacion('Por favor, corrige los errores del formulario', 'error');
     return;
   }
+
+  const nombre = document.getElementById('nombre').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const direccion = document.getElementById('direccion').value.trim();
 
   const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
 
@@ -320,8 +447,14 @@ async function confirmarPedido() {
     direccion_entrega: direccion
   };
 
+  // Deshabilitar botón mientras se procesa
+  const btnConfirmar = document.getElementById('confirmar-pedido');
+  const textoOriginal = btnConfirmar.innerHTML;
+  btnConfirmar.disabled = true;
+  btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+
   try {
-    const response = await fetch(`${API_URL}/api/pedidos`, {
+    const pedidoCreado = await fetchWithRetry(`${API_URL}/api/pedidos`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -329,31 +462,49 @@ async function confirmarPedido() {
       body: JSON.stringify(pedido)
     });
 
-    if (!response.ok) {
-      throw new Error('Error al crear el pedido');
-    }
-
-    const pedidoCreado = await response.json();
-
+    // Cerrar modal de checkout
     const checkoutModal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
     checkoutModal.hide();
 
+    // Mostrar modal de confirmación
     document.getElementById('pedido-numero').textContent = pedidoCreado.id;
     const confirmacionModal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
     confirmacionModal.show();
 
+    // Limpiar carrito
     carrito = [];
     localStorage.removeItem('carrito');
     actualizarCarrito();
 
+    // Resetear formulario
     document.getElementById('checkout-form').reset();
+    ['nombre', 'email', 'telefono', 'direccion'].forEach(limpiarErrorCampo);
+
+    // Mostrar notificación si el email no se envió
+    if (pedidoCreado.email_enviado === false) {
+      console.warn('⚠️ El pedido se creó pero no se pudo enviar el email de confirmación');
+    }
 
   } catch (error) {
     console.error('Error:', error);
-    alert('Hubo un error al procesar tu pedido. Por favor, intenta de nuevo.');
+    
+    let mensajeError = 'Hubo un error al procesar tu pedido. Por favor, inténtalo de nuevo.';
+    
+    if (error.message.includes('400')) {
+      mensajeError = 'Hay un error en los datos del formulario. Por favor, verifica la información.';
+    } else if (error.message.includes('Failed to fetch')) {
+      mensajeError = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
+    }
+    
+    mostrarNotificacion(mensajeError, 'error');
+  } finally {
+    // Rehabilitar botón
+    btnConfirmar.disabled = false;
+    btnConfirmar.innerHTML = textoOriginal;
   }
 }
 
+// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
   cargarProductos();
 
@@ -393,4 +544,46 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('carrito-overlay').addEventListener('click', toggleCarrito);
 
   document.getElementById('confirmar-pedido').addEventListener('click', confirmarPedido);
+  
+  // Validación en tiempo real
+  const campos = ['nombre', 'email', 'telefono', 'direccion'];
+  campos.forEach(campo => {
+    const input = document.getElementById(campo);
+    if (input) {
+      input.addEventListener('blur', () => {
+        const valor = input.value;
+        
+        switch(campo) {
+          case 'nombre':
+            if (valor && !validarNombre(valor)) {
+              mostrarErrorCampo(campo, 'El nombre debe tener entre 3 y 100 caracteres');
+            } else {
+              limpiarErrorCampo(campo);
+            }
+            break;
+          case 'email':
+            if (valor && !validarEmail(valor)) {
+              mostrarErrorCampo(campo, 'Por favor, introduce un email válido');
+            } else {
+              limpiarErrorCampo(campo);
+            }
+            break;
+          case 'telefono':
+            if (valor && !validarTelefono(valor)) {
+              mostrarErrorCampo(campo, 'El teléfono debe tener entre 9 y 15 dígitos');
+            } else {
+              limpiarErrorCampo(campo);
+            }
+            break;
+          case 'direccion':
+            if (valor && !validarDireccion(valor)) {
+              mostrarErrorCampo(campo, 'La dirección debe tener al menos 10 caracteres');
+            } else {
+              limpiarErrorCampo(campo);
+            }
+            break;
+        }
+      });
+    }
+  });
 });
